@@ -1,1 +1,190 @@
+package com.example.task21;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends AppCompatActivity {
+
+    private Spinner sourceUnitSpinner, destinationUnitSpinner;
+    private EditText valueEditText;
+    private TextView resultTextView;
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        sourceUnitSpinner = findViewById(R.id.sourceUnitSpinner);
+        destinationUnitSpinner = findViewById(R.id.destinationUnitSpinner);
+        valueEditText = findViewById(R.id.valueEditText);
+        Button convertButton = findViewById(R.id.convertButton);
+        resultTextView = findViewById(R.id.resultTextView);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.unit_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sourceUnitSpinner.setAdapter(adapter);
+        destinationUnitSpinner.setAdapter(adapter);
+
+        convertButton.setOnClickListener(v -> {
+            if (!valueEditText.getText().toString().isEmpty()){
+                String sourceUnit = sourceUnitSpinner.getSelectedItem().toString();
+                String destinationUnit = destinationUnitSpinner.getSelectedItem().toString();
+                double inputValue = Double.parseDouble(valueEditText.getText().toString());
+                double convertedValue=convert(sourceUnit,destinationUnit,inputValue);
+                resultTextView.setText(getString(R.string.converted_value_is)+" "+convertedValue);
+                resultTextView.setVisibility(View.VISIBLE);
+            }else {
+                resultTextView.setVisibility(View.GONE);
+                Toast.makeText(MainActivity.this,"Please Enter Value First",Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public static double convert(String sourceUnit, String destinationUnit, double value) {
+        double result = 0.0;
+
+        // Length Conversions
+        switch (sourceUnit) {
+            case "Inch":
+                switch (destinationUnit) {
+                    case "Centimeter":
+                        result = value * 2.54;
+                        break;
+                    case "Foot":
+                        result = value / 12;
+                        break;
+                    case "Yard":
+                        result = value / 36;
+                        break;
+                    case "Mile":
+                        result = value / 63360;
+                        break;
+                }
+                break;
+            case "Foot":
+                switch (destinationUnit) {
+                    case "Inch":
+                        result = value * 12;
+                        break;
+                    case "Centimeter":
+                        result = value * 30.48;
+                        break;
+                    case "Yard":
+                        result = value / 3;
+                        break;
+                    case "Mile":
+                        result = value / 5280;
+                        break;
+                }
+                break;
+            case "Yard":
+                switch (destinationUnit) {
+                    case "Inch":
+                        result = value * 36;
+                        break;
+                    case "Foot":
+                        result = value * 3;
+                        break;
+                    case "Centimeter":
+                        result = value * 91.44;
+                        break;
+                    case "Mile":
+                        result = value / 1760;
+                        break;
+                }
+                break;
+            case "Mile":
+                switch (destinationUnit) {
+                    case "Inch":
+                        result = value * 63360;
+                        break;
+                    case "Foot":
+                        result = value * 5280;
+                        break;
+                    case "Yard":
+                        result = value * 1760;
+                        break;
+                    case "Centimeter":
+                        result = value * 160934;
+                        break;
+                }
+                break;
+
+            // Weight Conversions
+            case "Pound":
+                switch (destinationUnit) {
+                    case "Kilogram":
+                        result = value * 0.453592;
+                        break;
+                    case "Ounce":
+                        result = value * 16;
+                        break;
+                    case "Ton":
+                        result = value / 2000;
+                        break;
+                }
+                break;
+            case "Ounce":
+                switch (destinationUnit) {
+                    case "Pound":
+                        result = value / 16;
+                        break;
+                    case "Kilogram":
+                        result = value * 0.0283495;
+                        break;
+                    case "Ton":
+                        result = value / 35274;
+                        break;
+                }
+                break;
+            case "Ton":
+                switch (destinationUnit) {
+                    case "Pound":
+                        result = value * 2000;
+                        break;
+                    case "Ounce":
+                        result = value * 35274;
+                        break;
+                    case "Kilogram":
+                        result = value * 907.185;
+                        break;
+                }
+                break;
+
+            // Temperature Conversions
+            case "Celsius":
+                if (destinationUnit.equals("Fahrenheit")) {
+                    result = (value * 1.8) + 32;
+                } else if (destinationUnit.equals("Kelvin")) {
+                    result = value + 273.15;
+                }
+                break;
+            case "Fahrenheit":
+                if (destinationUnit.equals("Celsius")) {
+                    result = (value - 32) / 1.8;
+                } else if (destinationUnit.equals("Kelvin")) {
+                    result = (value + 459.67) * 5 / 9;
+                }
+                break;
+            case "Kelvin":
+                if (destinationUnit.equals("Celsius")) {
+                    result = value - 273.15;
+                } else if (destinationUnit.equals("Fahrenheit")) {
+                    result = (value * 9 / 5) - 459.67;
+                }
+                break;
+        }
+
+        return result;
+    }
+}
